@@ -22,6 +22,9 @@ export default function RootLayout({
             <a href="/about" className="text-gray-600 hover:text-blue-600">
               About
             </a>
+                        <a href="/contact" className="text-gray-600 hover:text-blue-600">
+              Contact
+            </a>
           </div>
         </nav>
         <main className="max-w-4xl mx-auto px-4 pb-12">{children}</main>

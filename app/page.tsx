@@ -27,7 +27,7 @@ const cards: Card[] = [
     category: 'Technology',
   },
   {
-    name: 'James Chen',
+    name: 'James Chan',
     title: 'Licensed Acupuncturist',
     company: 'Harmony Wellness Center',
     phone: '(925) 555-0202',
