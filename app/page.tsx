@@ -88,7 +88,7 @@ const cards: Card[] = [
     phone: '(925) 555-0707',
     email: 'marcus@webbtech.com',
     website: 'https://webbtech.com',
-    category: 'Services',
+    category: 'AI',
   },
   {
     name: 'Elena Vasquez',
@@ -111,6 +111,8 @@ const categoryColors: Record<string, string> = {
   'Real Estate': 'bg-teal-100 text-teal-800',
   Services: 'bg-gray-100 text-gray-800',
   Nonprofit: 'bg-pink-100 text-pink-800', // added for the 5th new card
+  AI: 'bg-teal-100 text-pink-800', 
+
 };
 
 // =============================================================
