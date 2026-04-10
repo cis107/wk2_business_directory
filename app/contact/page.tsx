@@ -184,7 +184,7 @@ const validatePhone = (phone: string): boolean => {
       if (response.ok) {
         setSubmitStatus({
           type: "success",
-          message: "✓ Message sent successfully! We'll get back to you soon.",
+          message: "✓ Message sent successfully! We&#39;ll get back to you soon.",
         });
         // Reset form
         setFormData({
@@ -214,7 +214,7 @@ const validatePhone = (phone: string): boolean => {
           Contact Us
         </h1>
         <p className="text-lg text-gray-600">
-          We'd love to hear from you. Send us a message and we'll respond as
+          We&#39;d love to hear from you. Send us a message and we&#39;ll respond as
           soon as possible.
         </p>
       </header>
@@ -391,7 +391,7 @@ const validatePhone = (phone: string): boolean => {
               Get in Touch
             </h3>
             <p className="text-gray-600 mb-6">
-              Have questions about our business directory? We're here to help!
+              Have questions about our business directory? We&#39;re here to help!
             </p>
 
             <div className="space-y-4">
