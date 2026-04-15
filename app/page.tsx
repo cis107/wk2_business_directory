@@ -2,7 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+// Define your data shapes for the TypeScript compiler
+interface Category {
+  name: string;
+  color_classes: string;
+}
 
+interface Card {
+  id: string;
+  name: string;
+  title: string;
+  company: string;
+  phone: string;
+  email: string;
+  website?: string;
+  categories: Category | null;
+}
 export default function Home() {
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
