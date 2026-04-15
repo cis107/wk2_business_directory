@@ -1,160 +1,77 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generatePerson } from './generatePerson';
+import { supabase } from '@/lib/supabase';
 
-// =============================================================
-// 1. DATA & INTERFACES (Global Scope)
-// =============================================================
-interface Card {
-  name: string;
-  title: string;
-  company: string;
-  phone: string;
-  email: string;
-  website?: string;
-  category: string;
-}
-
-const cards: Card[] = [
-  {
-    name: 'Maria Garcia',
-    title: 'Web Developer',
-    company: 'Garcia Digital',
-    phone: '(925) 555-0101',
-    email: 'maria@garciadigital.com',
-    website: 'https://garciadigital.com',
-    category: 'Technology',
-  },
-  {
-    name: 'James Chan',
-    title: 'Licensed Acupuncturist',
-    company: 'Harmony Wellness Center',
-    phone: '(925) 555-0202',
-    email: 'james@harmonywellness.com',
-    website: 'https://harmonywellness.com',
-    category: 'Health',
-  },
-  {
-    name: 'Priya Patel',
-    title: 'CPA',
-    company: 'Patel & Associates',
-    phone: '(925) 555-0303',
-    email: 'priya@patelcpa.com',
-    website: 'https://patelcpa.com',
-    category: 'Finance',
-  },
-  {
-    name: 'Robert Jones',
-    title: 'CFO',
-    company: 'Jones & Associates',
-    phone: '(925) 555-1231',
-    email: 'rjones@gmail.com',
-    website: 'https://rjonesBIZ.com',
-    category: 'Business',
-  },
-  // NEW CARDS (5 additional, each unique category)
-  {
-    name: 'Sofia Rossi',
-    title: 'Executive Chef & Owner',
-    company: 'Rosso Vino Ristorante',
-    phone: '(925) 555-0404',
-    email: 'sofia@rossovino.com',
-    website: 'https://rossovino.com',
-    category: 'Restaurant',
-  },
-  {
-    name: 'David Kim',
-    title: 'High School Principal',
-    company: 'Valley Oak Academy',
-    phone: '(925) 555-0505',
-    email: 'd.kim@valleyoak.edu',
-    website: 'https://valleyoakacademy.org',
-    category: 'Education',
-  },
-  {
-    name: 'Linda Hartwell',
-    title: 'Realtor, ABR®',
-    company: 'Hartwell Homes Realty',
-    phone: '(925) 555-0606',
-    email: 'linda@hartwellhomes.com',
-    website: 'https://hartwellhomes.com',
-    category: 'Real Estate',
-  },
-  {
-    name: 'Marcus Webb',
-    title: 'IT Consultant',
-    company: 'WebbTech Solutions',
-    phone: '(925) 555-0707',
-    email: 'marcus@webbtech.com',
-    website: 'https://webbtech.com',
-    category: 'AI',
-  },
-  {
-    name: 'Elena Vasquez',
-    title: 'Executive Director',
-    company: 'East Bay Community Fund',
-    phone: '(925) 555-0808',
-    email: 'elena@ebcf.org',
-    website: 'https://ebcf.org',
-    category: 'Nonprofit',
-  },
-];
-
-const categoryColors: Record<string, string> = {
-  Technology: 'bg-blue-100 text-blue-800',
-  Health: 'bg-green-100 text-green-800',
-  Finance: 'bg-amber-100 text-amber-800',
-  Business: 'bg-indigo-100 text-indigo-800',
-  Restaurant: 'bg-orange-100 text-orange-800',
-  Education: 'bg-purple-100 text-purple-800',
-  'Real Estate': 'bg-teal-100 text-teal-800',
-  Services: 'bg-gray-100 text-gray-800',
-  Nonprofit: 'bg-pink-100 text-pink-800', // added for the 5th new card
-  AI: 'bg-teal-100 text-pink-800', 
-
-};
-
-// =============================================================
-// 2. THE PAGE COMPONENT
-// =============================================================
 export default function Home() {
-  // Use state to wait for the browser (prevents "document is not defined" error)
-  const [isClient, setIsClient] = useState(false);
+  const [cards, setCards] = useState<Card[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setIsClient(true);
+    fetchCards();
   }, []);
+
+  async function fetchCards() {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('cards')
+        .select(`
+          id, name, title, company, phone, email, website,
+          categories (name, color_classes)
+        `)
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setCards((data as any) || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Helper function to generate DiceBear URL
+  const getAvatarUrl = (name: string) => {
+    // encodeURIComponent handles spaces and special characters in names
+    const seed = encodeURIComponent(name);
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
       <header className="mb-10">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
-          Business Card Directory
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-2 font-serif">
+          Professional Directory
         </h1>
         <p className="text-lg text-gray-600">
-          Connecting {cards.length} local professionals and services.
+          Connecting {cards.length} local experts.
         </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {cards.map((card, index) => (
+        {cards.map((card) => (
           <div
-            key={index}
+            key={card.id}
             className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
             <div className="flex items-center gap-4 mb-6">
-              {/* Avatar Logic */}
-              <div className="w-16 h-16 rounded-full bg-gray-50 flex-shrink-0 overflow-hidden ring-4 ring-gray-50">
-                {isClient ? (
-                  <img
-                    src={generatePerson(card.name, 200)}
-                    alt={card.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 animate-pulse" />
-                )}
+              {/* DiceBear Avatar */}
+              <div className="w-16 h-16 rounded-full bg-gray-100 flex-shrink-0 overflow-hidden ring-4 ring-gray-50">
+                <img
+                  src={getAvatarUrl(card.name)}
+                  alt={card.name}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
               </div>
 
               <div>
@@ -190,10 +107,10 @@ export default function Home() {
             <div className="pt-4 border-t border-gray-50">
               <span
                 className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                  categoryColors[card.category] || 'bg-gray-100 text-gray-800'
+                  card.categories?.color_classes || 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {card.category}
+                {card.categories?.name || 'General'}
               </span>
             </div>
           </div>
